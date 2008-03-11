@@ -5,6 +5,10 @@
 #include <Display/Camera.h>
 #include <Display/Viewport.h>
 
+class OpenEngine::Scene::ISceneNode;
+
+using OpenEngine::Scene::ISceneNode;
+
 using namespace OpenEngine::Core;
 using namespace OpenEngine::Display;
 
@@ -18,6 +22,7 @@ private:
 public:
     Factory();
     bool         SetupEngine(IGameEngine& engine);
+    void AddMovie(string filename, float scale, Vector<3,float> position, ISceneNode* root, IGameEngine& engine);
     IFrame*      GetFrame();
     IRenderer*   GetRenderer();
 };

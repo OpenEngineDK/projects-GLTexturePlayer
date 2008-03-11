@@ -33,5 +33,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   OpenEngine_Geometry
   OpenEngine_Renderers_OpenGL
   # Extension dependencies
+  Extensions_SDL
   Extensions_MovieResource
 )

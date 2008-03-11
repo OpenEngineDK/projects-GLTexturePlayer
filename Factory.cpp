@@ -62,48 +62,29 @@ bool Factory::SetupEngine(IGameEngine& engine) {
 
         // Add models from models.txt to the scene
         // First we set the resources directory
-	string resourcedir = "projects/GLTexturePlayer/data/";
+	string resourcedir = "projects/GLTexturePlayer/data/movies/";
 	ResourceManager::AppendPath(resourcedir);
 	logger.info << "Resource directory: " << resourcedir << logger.end;
 
         // load the resource plug-ins
-        ResourceManager::AddModelPlugin(new OBJPlugin());
-        ResourceManager::AddTexturePlugin(new TGAPlugin());
+	ResourceManager::AddTexturePlugin(new MoviePlugin());
 
         engine.AddModule(*(new Statistics(1000)));
 
-        string moviefilename = resourcedir + "movies/dark.mp4";
-        MovieResource* mplayer = new MovieResource(moviefilename);
-        engine.AddModule(*mplayer);
-        TransformationNode* background = Billboard::CreateMovieBillboard(mplayer, 0.025);
-	background->SetPosition(Vector<3,float>(0, 30, 35));
-	root->AddNode(background);
-  
-        string moviefilename2 = resourcedir + "movies/Wrath_Of_The_Lich_King_EN.avi";
-        MovieResource* mplayer2 = new MovieResource(moviefilename2);
-        engine.AddModule(*mplayer2);
-        TransformationNode* background2 = Billboard::CreateMovieBillboard(mplayer2, 0.025);
-	background2->SetPosition(Vector<3,float>(45, 5, 35));
-	root->AddNode(background2);
+	Vector<3,float> pos;
+	/*
+	pos = Vector<3,float>(0, 30, 35);
+	AddMovie("dark.mp4", 0.025, pos, root, engine);
+*/
+	pos = Vector<3,float>(45, 5, 35);
+	AddMovie("Wrath_Of_The_Lich_King_EN.avi", 0.025, pos, root, engine);
+	/*
+	pos = Vector<3,float>(-45, 5, 35);
+	AddMovie("I_am_Murloc_US.avi", 0.025, pos, root, engine);
 
-        string moviefilename3 = resourcedir + "movies/I_am_Murloc_US.avi";
-        MovieResource* mplayer3 = new MovieResource(moviefilename3);
-	engine.AddModule(*mplayer3);
-        TransformationNode* background3 = Billboard::CreateMovieBillboard(mplayer3, 0.025);
-	background3->SetPosition(Vector<3,float>(-45, 5, 35));
-	root->AddNode(background3);
-
-        string moviefilename4 = resourcedir + "movies/40_year_old_virgin_med.mov";
-        MovieResource* mplayer4 = new MovieResource(moviefilename4);
-        engine.AddModule(*mplayer4);
-        TransformationNode* background4 = Billboard::CreateMovieBillboard(mplayer4, 0.025);
-	background4->SetPosition(Vector<3,float>(0, 5, 35));
-	root->AddNode(background4);
-
-
-        MovieKeyHandler* movie_h = new MovieKeyHandler(mplayer);
-	movie_h->RegisterWithEngine(engine);
-
+	pos = Vector<3,float>(0, 5, 35);
+	AddMovie("40_year_old_virgin_med.mov", 0.1, pos, root, engine);
+	*/
     } catch (const Exception& ex) {
         logger.error << "An exception occurred: " << ex.what() << logger.end;
         throw ex;
@@ -112,6 +93,18 @@ bool Factory::SetupEngine(IGameEngine& engine) {
     return true;
 }
 
+void Factory::AddMovie(string moviefile, float scale, Vector<3,float> position, ISceneNode* root, IGameEngine& engine) {
+	MovieResource* movie = (MovieResource*)
+	  ResourceManager::CreateTexture(moviefile).get();
+	engine.AddModule(*movie);
+        TransformationNode* billboard =
+	  Billboard::CreateMovieBillboard(movie, scale);
+	billboard->SetPosition(position);
+	root->AddNode(billboard);
+
+	MovieKeyHandler* movie_h = new MovieKeyHandler(movie);
+	movie_h->RegisterWithEngine(engine);
+}
 // Get methods for the factory.
 IFrame*      Factory::GetFrame()      { return frame; }
 IRenderer*   Factory::GetRenderer()   { return renderer; }

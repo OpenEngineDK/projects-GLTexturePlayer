@@ -7,6 +7,9 @@
 // See the GNU General Public License for more details (see LICENSE). 
 //--------------------------------------------------------------------
 
+// OpenEngine stuff
+#include <Meta/Config.h>
+
 #include "Factory.h"
 
 #include <Core/GameEngine.h>

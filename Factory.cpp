@@ -32,6 +32,8 @@ using namespace OpenEngine::Scene;
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Utils;
 
+string Factory::filename = "";
+
 Factory::Factory() {
     frame    = new SDLFrame(800, 600, 32);
     viewport = new Viewport(*frame);
@@ -62,29 +64,16 @@ bool Factory::SetupEngine(IGameEngine& engine) {
 
         // Add models from models.txt to the scene
         // First we set the resources directory
-	string resourcedir = "projects/GLTexturePlayer/data/movies/";
-	DirectoryManager::AppendPath(resourcedir);
-	logger.info << "Resource directory: " << resourcedir << logger.end;
+	DirectoryManager::AppendPath("/");
+	DirectoryManager::AppendPath(""); //current directory
 
         // load the resource plug-ins
 	ResourceManager<ITextureResource>::AddPlugin(new MoviePlugin());
 
         engine.AddModule(*(new Statistics(1000)));
 
-	Vector<3,float> pos;
-	/*
-	pos = Vector<3,float>(0, 30, 35);
-	AddMovie("dark.mp4", 0.025, pos, root, engine);
-*/
-	pos = Vector<3,float>(45, 5, 35);
-	AddMovie("Wrath_Of_The_Lich_King_EN.avi", 0.025, pos, root, engine);
-	/*
-	pos = Vector<3,float>(-45, 5, 35);
-	AddMovie("I_am_Murloc_US.avi", 0.025, pos, root, engine);
-
-	pos = Vector<3,float>(0, 5, 35);
-	AddMovie("40_year_old_virgin_med.mov", 0.1, pos, root, engine);
-	*/
+	Vector<3,float> pos = Vector<3,float>(0, 10, 40);
+	AddMovie(filename, 0.025, pos, root, engine);
     } catch (const Exception& ex) {
         logger.error << "An exception occurred: " << ex.what() << logger.end;
         throw ex;

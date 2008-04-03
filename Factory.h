@@ -25,6 +25,8 @@ public:
     void AddMovie(string filename, float scale, Vector<3,float> position, ISceneNode* root, IGameEngine& engine);
     IFrame*      GetFrame();
     IRenderer*   GetRenderer();
+
+    static string filename;
 };
 
 #endif

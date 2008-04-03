@@ -19,7 +19,7 @@
 // from extensions
 #include <Utils/MoveHandler.h>
 #include <Utils/QuitHandler.h>
-#include <Resources/MovieResource.h>
+#include <Resources/FFMPEGResource.h>
 #include <Utils/Billboard.h>
 
 #include <string>
@@ -68,7 +68,7 @@ bool Factory::SetupEngine(IGameEngine& engine) {
 	DirectoryManager::AppendPath(""); //current directory
 
         // load the resource plug-ins
-	ResourceManager<ITextureResource>::AddPlugin(new MoviePlugin());
+	ResourceManager<IMovieResource>::AddPlugin(new FFMPEGPlugin());
 
         engine.AddModule(*(new Statistics(1000)));
 
@@ -83,9 +83,9 @@ bool Factory::SetupEngine(IGameEngine& engine) {
 }
 
 void Factory::AddMovie(string moviefile, float scale, Vector<3,float> position, ISceneNode* root, IGameEngine& engine) {
-	MovieResource* movie = (MovieResource*)
-	  ResourceManager<ITextureResource>::Create(moviefile).get();
-	engine.AddModule(*movie);
+	IMovieResourcePtr movie =
+	  ResourceManager<IMovieResource>::Create(moviefile);
+	engine.AddModule( *(movie.get()) );
         TransformationNode* billboard =
 	  Billboard::CreateMovieBillboard(movie, scale);
 	billboard->SetPosition(position);

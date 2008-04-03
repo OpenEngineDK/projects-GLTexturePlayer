@@ -4,18 +4,16 @@
 // from core
 #include <Devices/IKeyboard.h>
 #include <Devices/Symbols.h>
-
-// from extensions
-#include <Resources/MovieResource.h>
+#include <Resources/IMovieResource.h>
 
 using namespace OpenEngine::Devices;
 
 class MovieKeyHandler {
 private:
-    MovieResource* movie;
+    IMovieResourcePtr movie;
     bool pause;
 public:
-    MovieKeyHandler(MovieResource* movie) : movie(movie), pause(false) {}
+    MovieKeyHandler(IMovieResourcePtr movie) : movie(movie), pause(false) {}
     void HandleKey(KeyboardEventArg arg) {
         if (arg.sym == KEY_SPACE) {
             pause = !pause;

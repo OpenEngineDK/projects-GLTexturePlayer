@@ -63,11 +63,11 @@ bool Factory::SetupEngine(IGameEngine& engine) {
         // Add models from models.txt to the scene
         // First we set the resources directory
 	string resourcedir = "projects/GLTexturePlayer/data/movies/";
-	ResourceManager::AppendPath(resourcedir);
+	DirectoryManager::AppendPath(resourcedir);
 	logger.info << "Resource directory: " << resourcedir << logger.end;
 
         // load the resource plug-ins
-	ResourceManager::AddTexturePlugin(new MoviePlugin());
+	ResourceManager<ITextureResource>::AddPlugin(new MoviePlugin());
 
         engine.AddModule(*(new Statistics(1000)));
 
@@ -95,7 +95,7 @@ bool Factory::SetupEngine(IGameEngine& engine) {
 
 void Factory::AddMovie(string moviefile, float scale, Vector<3,float> position, ISceneNode* root, IGameEngine& engine) {
 	MovieResource* movie = (MovieResource*)
-	  ResourceManager::CreateTexture(moviefile).get();
+	  ResourceManager<ITextureResource>::Create(moviefile).get();
 	engine.AddModule(*movie);
         TransformationNode* billboard =
 	  Billboard::CreateMovieBillboard(movie, scale);

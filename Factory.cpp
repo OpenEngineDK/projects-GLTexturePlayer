@@ -46,6 +46,13 @@ Factory::Factory() {
     renderer->AddRenderingView(new RenderingView(*viewport));
 }
 
+Factory::~Factory() {
+    delete frame;
+    delete viewport;
+    delete camera;
+    delete renderer;
+}
+
 bool Factory::SetupEngine(IGameEngine& engine) {
     try {
         // Setup input handling

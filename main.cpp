@@ -30,18 +30,20 @@ int main( int argc, char** argv ) {
       logger.info << "Keyboard controls:"                                             << logger.end;
       logger.info << " Space : Pause/resume a playing movie."                         << logger.end;
       logger.info << "     w : Move positive direction on the z-axis."         << logger.end;
-    logger.info << "     s : Move negative direction on the z-axis."         << logger.end;
-    logger.info << "     d : Move positive direction on the x-axis."         << logger.end;
-    logger.info << "     a : Move negative direction on the x-axis."         << logger.end;
-    logger.info << "Moving the mouse up and down triggers pitch."          << logger.end;
-    logger.info << "Moving the mouse right and left triggers yaw."         << logger.end;
-    logger.info << "=====================================================" << logger.end;
+      logger.info << "     s : Move negative direction on the z-axis."         << logger.end;
+      logger.info << "     d : Move positive direction on the x-axis."         << logger.end;
+      logger.info << "     a : Move negative direction on the x-axis."         << logger.end;
+      logger.info << "Moving the mouse up and down triggers pitch."          << logger.end;
+      logger.info << "Moving the mouse right and left triggers yaw."         << logger.end;
+      logger.info << "=====================================================" << logger.end;
     
-    // Start the engine.
-    IGameEngine& engine = GameEngine::Instance();
-    engine.Start(new Factory());
+      // Start the engine.
+      IGameEngine& engine = GameEngine::Instance();
+      Factory* factory = new Factory();
+      engine.Start(factory);
+      delete factory;
     } else {
-    logger.info << "wrong number of parameters - first parameter must be a filename" << logger.end;
+      logger.info << "wrong number of parameters - first parameter must be a filename" << logger.end;
     }
     // Return when the engine stops.
     return EXIT_SUCCESS;

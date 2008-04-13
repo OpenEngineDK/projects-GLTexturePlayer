@@ -21,6 +21,7 @@ private:
 
 public:
     Factory();
+    virtual ~Factory();
     bool         SetupEngine(IGameEngine& engine);
     void AddMovie(string filename, float scale, Vector<3,float> position, ISceneNode* root, IGameEngine& engine);
     IFrame*      GetFrame();

@@ -12,8 +12,6 @@
 #include <Scene/GeometryNode.h>
 #include <Scene/TransformationNode.h>
 #include <Resources/ResourceManager.h>
-#include <Resources/OBJResource.h>
-#include <Resources/TGAResource.h>
 #include <Utils/Statistics.h>
 
 // from extensions

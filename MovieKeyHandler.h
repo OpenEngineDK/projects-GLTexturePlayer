@@ -8,14 +8,15 @@
 
 using namespace OpenEngine::Devices;
 
-class MovieKeyHandler {
+class MovieKeyHandler : public IListener<KeyboardEventArg> {
 private:
     IMovieResourcePtr movie;
     bool pause;
 public:
     MovieKeyHandler(IMovieResourcePtr movie) : movie(movie), pause(false) {}
-    void HandleKey(KeyboardEventArg arg) {
-        if (arg.sym == KEY_SPACE) {
+    void Handle(KeyboardEventArg arg) {
+        if (arg.type == KeyboardEventArg::PRESS
+	    && arg.sym == KEY_SPACE) {
             pause = !pause;
             if(movie!=NULL)
                 movie->Pause(pause);
@@ -23,10 +24,7 @@ public:
     }
 
     void RegisterWithEngine(IGameEngine& engine) {
-        Listener<MovieKeyHandler,KeyboardEventArg>* downlist =
-            new Listener<MovieKeyHandler,KeyboardEventArg>
-	  (*this,&MovieKeyHandler::HandleKey);
-        IKeyboard::keyDownEvent.Add(downlist);
+        IKeyboard::keyEvent.Attach(*this);
     }
 };
 

@@ -3,6 +3,7 @@
 
 // from OpenEngine
 #include <Logging/Logger.h>
+#include <Display/Frustum.h>
 #include <Display/Viewport.h>
 #include <Display/ViewingVolume.h>
 #include <Display/SDLFrame.h>
@@ -38,10 +39,15 @@ Factory::Factory() {
         
     camera = new Camera(*(new ViewingVolume()));
     camera->SetPosition(Vector<3,float>(0,20,80));
-    viewport->SetViewingVolume(camera);
+    //viewport->SetViewingVolume(camera);
+
+    // frustum hack
+    Frustum* frustum = new Frustum(*camera);
+    frustum->SetFar(1000);
+    viewport->SetViewingVolume(frustum);
 
     renderer = new Renderer();
-    renderer->AddRenderingView(new RenderingView(*viewport));
+    renderer->process.Attach(*(new RenderingView(*viewport)));
 }
 
 Factory::~Factory() {
@@ -59,7 +65,8 @@ bool Factory::SetupEngine(IGameEngine& engine) {
 
         // Register the handler as a listener on up and down keyboard events.
         MoveHandler* move_h = new MoveHandler(*camera);
-	move_h->RegisterWithEngine(engine);
+	engine.AddModule(*move_h);
+	move_h->BindToEventSystem();
         QuitHandler* quit_h = new QuitHandler();
 	quit_h->BindToEventSystem();
 

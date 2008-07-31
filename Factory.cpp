@@ -39,12 +39,7 @@ Factory::Factory() {
         
     camera = new Camera(*(new ViewingVolume()));
     camera->SetPosition(Vector<3,float>(0,20,80));
-    //viewport->SetViewingVolume(camera);
-
-    // frustum hack
-    Frustum* frustum = new Frustum(*camera);
-    frustum->SetFar(1000);
-    viewport->SetViewingVolume(frustum);
+    viewport->SetViewingVolume(camera);
 
     renderer = new Renderer();
     renderer->process.Attach(*(new RenderingView(*viewport)));

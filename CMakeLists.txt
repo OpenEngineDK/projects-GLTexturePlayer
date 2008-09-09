@@ -6,7 +6,6 @@ SET( PROJECT_NAME "GLTexturePlayer")
 SET( PROJECT_SOURCES
   # Add all the cpp source files here
   main.cpp
-  Factory.cpp
 )
 
 # Include if using SDL under Mac OS X

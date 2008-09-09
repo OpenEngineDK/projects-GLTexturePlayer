@@ -22,10 +22,6 @@ public:
                 movie->Pause(pause);
         }
     }
-
-    void RegisterWithEngine(IGameEngine& engine) {
-        IKeyboard::keyEvent.Attach(*this);
-    }
 };
 
 #endif

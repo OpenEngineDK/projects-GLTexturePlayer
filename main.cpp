@@ -34,6 +34,8 @@
 #include <Resources/ITextureResource.h>
 #include <Resources/FFMPEGResource.h>
 
+#include <Resources/TextureReloader.h>
+
 // Scene structures
 #include <Scene/ISceneNode.h>
 #include <Scene/SceneNode.h>
@@ -71,6 +73,7 @@ struct Config {
     IViewingVolume*       viewingvolume;
     Camera*               camera;
     IRenderer*            renderer;
+    TextureReloader       trl;
     IMouse*               mouse;
     IKeyboard*            keyboard;
     ISceneNode*           scene;
@@ -208,6 +211,7 @@ void SetupRendering(Config& config) {
 
     // Create a renderer
     config.renderer = new Renderer();
+    config.renderer->PreProcessEvent().Attach(config.trl);
 
     // Setup a rendering view
     RenderingView* rv = new RenderingView(*config.viewport);
@@ -229,7 +233,9 @@ void AddMovie(string moviefile, float scale, Vector<3,float> position,
     config.engine.ProcessEvent().Attach(*(movie.get()));
     config.engine.DeinitializeEvent().Attach(*(movie.get()));
 
-        TransformationNode* billboard =
+    config.trl.ListenOn( movie->ChangedEvent() );
+
+    TransformationNode* billboard =
 	  Billboard::CreateMovieBillboard(movie, scale);
 	billboard->SetPosition(position);
 	root->AddNode(billboard);

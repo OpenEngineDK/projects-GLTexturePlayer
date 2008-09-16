@@ -34,4 +34,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   # Extension dependencies
   Extensions_SDL
   Extensions_FFMPEGResource
+  Extensions_TGAResource
+  Extensions_ScaledTextureResource
 )

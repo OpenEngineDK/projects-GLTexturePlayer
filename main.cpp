@@ -12,6 +12,7 @@
 
 // Core structures
 #include <Core/Engine.h>
+#include <Core/EngineEvents.h>
 
 // Display structures
 #include <Display/IFrame.h>
@@ -26,6 +27,7 @@
 // OpenGL rendering implementation
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
+#include <Renderers/OpenGL/TextureLoader.h>
 
 // Resources
 #include <Resources/DirectoryManager.h>
@@ -33,6 +35,8 @@
 // Resource plugins
 #include <Resources/ITextureResource.h>
 #include <Resources/FFMPEGResource.h>
+#include <Resources/TGAResource.h>
+#include <Resources/ScaledTextureResource.h>
 
 #include <Resources/TextureReloader.h>
 
@@ -154,6 +158,7 @@ void SetupResources(Config& config) {
     
     // load the resource plug-ins
 	ResourceManager<IMovieResource>::AddPlugin(new FFMPEGPlugin());
+	ResourceManager<ITextureResource>::AddPlugin(new TGAPlugin());
 
     config.resourcesLoaded = true;
 }
@@ -165,13 +170,15 @@ void SetupDisplay(Config& config) {
         config.viewport      != NULL)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    config.frame         = new SDLFrame(800, 600, 32);
+    SDLFrame* sdlframe = new SDLFrame(800, 600, 32);
+    config.frame         = sdlframe;
     config.viewingvolume = new ViewingVolume();
     config.camera        = new Camera( *config.viewingvolume );
     config.viewport      = new Viewport(*config.frame);
     config.viewport->SetViewingVolume(config.camera);
 
-    config.engine.InitializeEvent().Attach(*config.frame);
+    sdlframe->Handle(InitializeEventArg());
+    //config.engine.InitializeEvent().Attach(*config.frame);
     config.engine.ProcessEvent().Attach(*config.frame);
     config.engine.DeinitializeEvent().Attach(*config.frame);
 }
@@ -244,6 +251,15 @@ void AddMovie(string moviefile, float scale, Vector<3,float> position,
     config.keyboard->KeyEvent().Attach(*movie_h);
 }
 
+void AddTexture(ITextureResourcePtr texture,
+                float scale, Vector<3,float> position,
+                ISceneNode* root, Config& config) {
+    TransformationNode* billboard =
+	  Billboard::CreateTextureBillboard(texture, scale);
+	billboard->SetPosition(position);
+	root->AddNode(billboard);
+}
+
 void SetupScene(Config& config) {
     if (config.scene  != NULL ||
         config.mouse  == NULL ||
@@ -255,11 +271,28 @@ void SetupScene(Config& config) {
         SceneNode* root = new SceneNode();
         config.scene = root;
 
-        Vector<3,float> pos = Vector<3,float>(0, 10, 40);
-        AddMovie(config.filename, 0.025, pos, root, config);
+        Vector<3,float> pos = Vector<3,float>(10, 0, 0);
+
+        const bool loadMovie = true;
+        if (!loadMovie) {
+            ITextureResourcePtr tex =
+                ResourceManager<ITextureResource>::Create(config.filename);
+            TextureLoader::LoadTextureResource(tex);
+            //tex->Load();
+            AddTexture(tex, 0.025, pos, root, config);
+            
+            ITextureResourcePtr scaledTex = ITextureResourcePtr
+                ( new ScaledTextureResource(tex, 2) ); 
+            TextureLoader::LoadTextureResource(scaledTex);
+            //scaledTex->Load();
+            AddTexture(scaledTex, 0.025*2, -pos, root, config);
+        }
+        else
+            AddMovie(config.filename, 0.025, pos, root, config);
 }
 
 void SetupDebugging(Config& config) {
     // Add Statistics module
-    config.engine.ProcessEvent().Attach(*(new OpenEngine::Utils::Statistics(1000)));
+    config.engine.ProcessEvent()
+        .Attach(*(new OpenEngine::Utils::Statistics(1000)));
 }

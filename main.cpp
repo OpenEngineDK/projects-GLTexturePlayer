@@ -27,7 +27,6 @@
 // OpenGL rendering implementation
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
-#include <Renderers/OpenGL/TextureLoader.h>
 
 // Resources
 #include <Resources/DirectoryManager.h>
@@ -38,7 +37,7 @@
 #include <Resources/TGAResource.h>
 #include <Resources/ScaledTextureResource.h>
 
-#include <Resources/TextureReloader.h>
+#include <Renderers/TextureLoader.h>
 
 // Scene structures
 #include <Scene/ISceneNode.h>
@@ -60,6 +59,7 @@
 #include "MovieKeyHandler.h"
 
 // Additional namespaces
+using namespace OpenEngine;
 using namespace OpenEngine::Core;
 using namespace OpenEngine::Logging;
 using namespace OpenEngine::Devices;
@@ -77,12 +77,12 @@ struct Config {
     IViewingVolume*       viewingvolume;
     Camera*               camera;
     IRenderer*            renderer;
-    TextureReloader       trl;
     IMouse*               mouse;
     IKeyboard*            keyboard;
     ISceneNode*           scene;
     bool                  resourcesLoaded;
     string                filename;
+    Renderers::TextureLoader*        textureLoader;
     Config(IEngine& engine)
         : engine(engine)
         , frame(NULL)
@@ -95,6 +95,7 @@ struct Config {
         , scene(NULL)
         , resourcesLoaded(false)
         , filename("")
+        , textureLoader(NULL)
     {}
 };
 
@@ -131,8 +132,8 @@ int main( int argc, char** argv ) {
       SetupResources(config);
       SetupDisplay(config);
       SetupDevices(config);
-      SetupScene(config);
       SetupRendering(config);
+      SetupScene(config);
 
       // Possibly add some debugging stuff
       SetupDebugging(config);
@@ -212,20 +213,18 @@ void SetupDevices(Config& config) {
 void SetupRendering(Config& config) {
     if (config.viewport == NULL ||
         config.renderer != NULL ||
-        config.camera == NULL ||
-        config.scene == NULL)
+        config.camera == NULL )
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
     config.renderer = new Renderer();
-    config.renderer->PreProcessEvent().Attach(config.trl);
 
     // Setup a rendering view
     RenderingView* rv = new RenderingView(*config.viewport);
     config.renderer->ProcessEvent().Attach(*rv);
 
-    // Supply the scene to the renderer
-    config.renderer->SetSceneRoot(config.scene);
+    // Add rendering initialization tasks
+    config.textureLoader = new Renderers::TextureLoader(*config.renderer);
 
     config.engine.InitializeEvent().Attach(*config.renderer);
     config.engine.ProcessEvent().Attach(*config.renderer);
@@ -235,12 +234,14 @@ void SetupRendering(Config& config) {
 void AddMovie(string moviefile, float scale, Vector<3,float> position,
               ISceneNode* root, Config& config) {
 	IMovieResourcePtr movie =
-	  ResourceManager<IMovieResource>::Create(moviefile);
+        //ResourceManager<IMovieResource>::Create(moviefile);
+        FFMPEGResource::Create(moviefile, false);
+
     config.engine.InitializeEvent().Attach(*(movie.get()));
     config.engine.ProcessEvent().Attach(*(movie.get()));
     config.engine.DeinitializeEvent().Attach(*(movie.get()));
 
-    config.trl.ListenOn( movie->ChangedEvent() );
+    config.textureLoader->Load( movie, Renderers::TextureLoader::RELOAD_ALWAYS );
 
     TransformationNode* billboard =
 	  Billboard::CreateMovieBillboard(movie, scale);
@@ -277,18 +278,21 @@ void SetupScene(Config& config) {
         if (!loadMovie) {
             ITextureResourcePtr tex =
                 ResourceManager<ITextureResource>::Create(config.filename);
-            TextureLoader::LoadTextureResource(tex);
+            config.textureLoader->Load(tex);
             //tex->Load();
             AddTexture(tex, 0.025, pos, root, config);
             
             ITextureResourcePtr scaledTex = ITextureResourcePtr
                 ( new ScaledTextureResource(tex, 2) ); 
-            TextureLoader::LoadTextureResource(scaledTex);
+            config.textureLoader->Load(scaledTex);
             //scaledTex->Load();
             AddTexture(scaledTex, 0.025*2, -pos, root, config);
         }
         else
             AddMovie(config.filename, 0.025, pos, root, config);
+
+    // Supply the scene to the renderer
+    config.renderer->SetSceneRoot(config.scene);
 }
 
 void SetupDebugging(Config& config) {

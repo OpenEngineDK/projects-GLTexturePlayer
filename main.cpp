@@ -241,7 +241,8 @@ void AddMovie(string moviefile, float scale, Vector<3,float> position,
     config.engine.ProcessEvent().Attach(*(movie.get()));
     config.engine.DeinitializeEvent().Attach(*(movie.get()));
 
-    config.textureLoader->Load( movie, Renderers::TextureLoader::RELOAD_ALWAYS );
+    config.textureLoader->
+        Load( movie, Renderers::TextureLoader::RELOAD_IMMEDIATE );
 
     TransformationNode* billboard =
 	  Billboard::CreateMovieBillboard(movie, scale);

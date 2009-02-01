@@ -15,7 +15,7 @@ private:
 public:
     MovieKeyHandler(IMovieResourcePtr movie) : movie(movie), pause(false) {}
     void Handle(KeyboardEventArg arg) {
-        if (arg.type == KeyboardEventArg::PRESS
+        if (arg.type == EVENT_PRESS
 	    && arg.sym == KEY_SPACE) {
             pause = !pause;
             if(movie!=NULL)

@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   OpenEngine_Geometry
   # Extension dependencies
   Extensions_SDL
+  Extensions_OpenGLRenderer
   Extensions_FFMPEGResource
   Extensions_TGAResource
   Extensions_ScaledTextureResource

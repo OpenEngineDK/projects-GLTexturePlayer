@@ -22,8 +22,6 @@
 #include <Display/SDLFrame.h>
 #include <Devices/SDLInput.h>
 
-// Rendering structures
-#include <Renderers/IRenderNode.h>
 // OpenGL rendering implementation
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
@@ -217,7 +215,7 @@ void SetupRendering(Config& config) {
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
-    config.renderer = new Renderer();
+    config.renderer = new Renderer(config.viewport);
 
     // Setup a rendering view
     RenderingView* rv = new RenderingView(*config.viewport);

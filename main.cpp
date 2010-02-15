@@ -30,7 +30,7 @@
 #include <Resources/DirectoryManager.h>
 #include <Resources/ResourceManager.h>
 // Resource plugins
-#include <Resources/ITextureResource.h>
+#include <Resources/ITexture2D.h>
 #include <Resources/FFMPEGResource.h>
 #include <Resources/TGAResource.h>
 #include <Resources/ScaledTextureResource.h>
@@ -273,6 +273,7 @@ void SetupScene(Config& config) {
 
         Vector<3,float> pos = Vector<3,float>(10, 0, 0);
 
+        /*
         const bool loadMovie = true;
         if (!loadMovie) {
             ITextureResourcePtr tex =
@@ -281,13 +282,14 @@ void SetupScene(Config& config) {
             //tex->Load();
             AddTexture(tex, 0.025, pos, root, config);
             
-            ITextureResourcePtr scaledTex = ITextureResourcePtr
+            ITexture2DPtr scaledTex = ITexture2DPtr
                 ( new ScaledTextureResource(tex, 2) ); 
             config.textureLoader->Load(scaledTex);
             //scaledTex->Load();
             AddTexture(scaledTex, 0.025*2, -pos, root, config);
         }
         else
+        */
             AddMovie(config.filename, 0.025, pos, root, config);
 
     // Supply the scene to the renderer

@@ -35,5 +35,4 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_OpenGLRenderer
   Extensions_FFMPEGResource
   Extensions_TGAResource
-  Extensions_ScaledTextureResource
 )
